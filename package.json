@@ -1,0 +1,34 @@
+{
+  "name": "appcache-webpack-plugin",
+  "version": "0.1.0",
+  "author": "Eric Eldredge <lettertwo@gmail.com>",
+  "description": "Generate an HTML5 Application Cache for a Webpack build",
+  "peerDependencies": {
+    "webpack": ">=0.11 <2"
+  },
+  "scripts": {
+    "prepublish": "gulp build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/lettertwo/appcache-webpack-plugin.git"
+  },
+  "keywords": [
+    "webpack",
+    "appcache",
+    "application",
+    "cache",
+    "plugin"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/lettertwo/appcache-webpack-plugin/issues"
+  },
+  "homepage": "https://github.com/lettertwo/appcache-webpack-plugin",
+  "devDependencies": {
+    "coffee-script": "^1.7.1",
+    "gulp-bump": "^0.1.6",
+    "gulp-coffee": "^1.4.1",
+    "gulp": "^3.5.6"
+  }
+}
