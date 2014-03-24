@@ -27,7 +27,6 @@
   "homepage": "https://github.com/lettertwo/appcache-webpack-plugin",
   "devDependencies": {
     "coffee-script": "^1.7.1",
-    "gulp-bump": "^0.1.6",
     "gulp-coffee": "^1.4.1",
     "gulp": "^3.5.6"
   }

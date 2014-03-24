@@ -1,15 +1,14 @@
 gulp = require 'gulp'
 coffee = require 'gulp-coffee'
-gbump = require 'gulp-bump'
+{spawn} = require 'child_process'
 
-bump = (type) ->
-  gulp.src ['./package.json']
-    .pipe gbump {type}
-    .pipe gulp.dest './'
+bump = (type, callback) ->
+  spawn 'npm', ['version', type, '-m', 'Release %s'], stdio: 'inherit'
+    .on 'exit', callback
 
-gulp.task 'bump:major', -> bump 'major'
-gulp.task 'bump:minor', -> bump 'minor'
-gulp.task 'bump:patch', -> bump 'patch'
+gulp.task 'bump:major', (callback) -> bump 'major', callback
+gulp.task 'bump:minor', (callback) -> bump 'minor', callback
+gulp.task 'bump:patch', (callback) -> bump 'patch', callback
 
 gulp.task 'build', ->
   gulp.src './src/*.coffee'
