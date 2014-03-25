@@ -1,28 +1,27 @@
-class AppCache
-  constructor: (@cache, @network, @fallback, @hash) -> @assets = []
-
-  addAsset: (asset) -> @assets.push asset
-
-  size: -> Buffer.byteLength @source(), 'utf8'
-
-  getManifestBody: ->
-    [
-      "#{@assets.join '\n'}\n"
-      if @cache?.length then "CACHE:\n#{@cache.join '\n'}\n"
-      if @network?.length then "NETWORK:\n#{@network.join '\n'}\n"
-      if @fallback?.length then "FALLBACK:\n#{@fallback.join '\n'}\n"
-    ].filter((v) -> v?.length).join '\n'
-
-  source: ->
-    """
-    CACHE MANIFEST
-    # #{@hash}
-
-    #{@getManifestBody()}
-    """
-
-
 class AppCachePlugin
+
+  @AppCache = class AppCache
+    constructor: (@cache, @network, @fallback, @hash) -> @assets = []
+
+    addAsset: (asset) -> @assets.push asset
+
+    size: -> Buffer.byteLength @source(), 'utf8'
+
+    getManifestBody: ->
+      [
+        if @assets?.length then "#{@assets.join '\n'}\n"
+        if @cache?.length then "CACHE:\n#{@cache.join '\n'}\n"
+        if @network?.length then "NETWORK:\n#{@network.join '\n'}\n"
+        if @fallback?.length then "FALLBACK:\n#{@fallback.join '\n'}\n"
+      ].filter((v) -> v?.length).join '\n'
+
+    source: ->
+      """
+      CACHE MANIFEST
+      # #{@hash}
+
+      #{@getManifestBody()}
+      """
 
   constructor: (options) ->
     @cache = options?.cache
