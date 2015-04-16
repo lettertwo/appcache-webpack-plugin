@@ -3,7 +3,7 @@ class AppCachePlugin
   @AppCache = class AppCache
     constructor: (@cache, @network, @fallback, @hash) -> @assets = []
 
-    addAsset: (asset) -> @assets.push asset
+    addAsset: (asset) -> @assets.push encodeURI(asset)
 
     size: -> Buffer.byteLength @source(), 'utf8'
 
