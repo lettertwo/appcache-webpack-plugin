@@ -27,6 +27,9 @@
     "url": "https://github.com/lettertwo/appcache-webpack-plugin/issues"
   },
   "homepage": "https://github.com/lettertwo/appcache-webpack-plugin",
+  "dependencies": {
+    "lodash": "~3.8.0"
+  },
   "devDependencies": {
     "coffee-script": "^1.7.1",
     "gulp-coffee": "^1.4.1",

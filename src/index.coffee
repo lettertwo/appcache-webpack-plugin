@@ -1,7 +1,9 @@
+_ = require 'lodash'
+
 class AppCachePlugin
 
   @AppCache = class AppCache
-    constructor: (@cache, @network, @fallback, @hash) -> @assets = []
+    constructor: (@cache, @network, @fallback, @hash, @exclude, @include) -> @assets = []
 
     addAsset: (asset) -> @assets.push asset
 
@@ -27,11 +29,27 @@ class AppCachePlugin
     @cache = options?.cache
     @network = options?.network or ['*']
     @fallback = options?.fallback
+    @exclude = options?.exclude
+    @include = options?.include
 
   apply: (compiler) ->
     compiler.plugin 'emit', (compilation, callback) =>
-      appCache = new AppCache @cache, @network, @fallback, compilation.hash
-      appCache.addAsset key for key in Object.keys compilation.assets
+      appCache = new AppCache @cache, @network, @fallback, compilation.hash, @exclude, @include
+      Object.keys(compilation.assets).forEach (key) ->
+        if _.isArray(_this.include)
+          if _.some(_this.include, ((exp) ->
+              exp.test key
+            ))
+            appCache.addAsset key
+          return
+        if _.isArray(_this.exclude)
+          if _.every(_this.exclude, ((exp) ->
+              !exp.test(key)
+            ))
+            appCache.addAsset key
+          return
+        appCache.addAsset key
+        return
       compilation.assets['manifest.appcache'] = appCache
       callback()
 
