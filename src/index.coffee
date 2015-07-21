@@ -31,7 +31,7 @@ class AppCachePlugin
   apply: (compiler) ->
     compiler.plugin 'emit', (compilation, callback) =>
       appCache = new AppCache @cache, @network, @fallback, compilation.hash
-      appCache.addAsset key for key in Object.keys compilation.assets
+      appCache.addAsset (compiler.options.output.publicPath + key) for key in Object.keys compilation.assets
       compilation.assets['manifest.appcache'] = appCache
       callback()
 
