@@ -11,7 +11,8 @@ module.exports = {
     new AppCachePlugin({
       cache: ['someOtherAsset.jpg'],
       network: null,  // No network access allowed!
-      fallback: ['failwhale.jpg']
+      fallback: ['failwhale.jpg'],
+      settings: ['prefer-online']
     })
   ]
 }
@@ -23,6 +24,7 @@ Arguments:
 * `network`: An array of assets that may be accessed via the network.
   Defaults to `['*']`.
 * `fallback`: An array of fallback assets.
+* `settings`: An array of settings.
 
 ## License
 

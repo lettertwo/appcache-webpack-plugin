@@ -9,6 +9,7 @@ describe 'AppCache', ->
         ['cache.test']
         ['network.test']
         ['fallback.test']
+        undefined
         createHash('md5').digest 'hex'
       )
 
@@ -78,6 +79,38 @@ describe 'AppCache', ->
 
         """
 
+    it 'should include SETTINGS section', ->
+      @appCache.settings = ["prefer-online"]
+      assert.equal @appCache.getManifestBody(),
+        """
+        CACHE:
+        cache.test
+
+        NETWORK:
+        network.test
+
+        FALLBACK:
+        fallback.test
+
+        SETTINGS:
+        prefer-online
+
+        """
+
+    it 'should exclude empty SETTINGS section', ->
+      @appCache.settings = {}
+      assert.equal @appCache.getManifestBody(),
+        """
+        CACHE:
+        cache.test
+
+        NETWORK:
+        network.test
+
+        FALLBACK:
+        fallback.test
+
+        """
 
   describe 'source()', ->
     it 'should include webpack build hash', ->
