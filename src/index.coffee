@@ -29,13 +29,21 @@ class AppCachePlugin
     @network = options?.network or ['*']
     @fallback = options?.fallback
     @settings = options?.settings
+    @exclude = options?.exclude or []
+
+  handleCompilerEmit: (compilation, callback) =>
+      @appCacheInstance = new AppCache @cache, @network, @fallback, @settings, compilation.hash
+      assetsList = JSON.parse(JSON.stringify(compilation.assets))
+
+      delete assetsList[key] for key in Object.keys(compilation.assets) when key in @exclude
+
+
+      @appCacheInstance.addAsset asset for asset in Object.keys(assetsList)
+      compilation.assets['manifest.appcache'] = @appCacheInstance
+      callback()
 
   apply: (compiler) ->
-    compiler.plugin 'emit', (compilation, callback) =>
-      appCache = new AppCache @cache, @network, @fallback, @settings, compilation.hash
-      appCache.addAsset key for key in Object.keys compilation.assets
-      compilation.assets['manifest.appcache'] = appCache
-      callback()
+    compiler.plugin 'emit', handleCompilerEmit
 
 
 module.exports = AppCachePlugin
