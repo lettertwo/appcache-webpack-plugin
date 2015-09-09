@@ -177,4 +177,23 @@ describe 'AppCachePlugin', ->
           
         """
 
+    it 'should exclude multiple assets specified in the options', =>
+      appCachePluginInstance = new AppCachePlugin
+        exclude: [
+          'testimage1.png',
+          'testcss1.css',
+          'testjs1.js',
+        ]
+
+      appCachePluginInstance.handleCompilerEmit(@compilationMock, (->))
+
+      assert.equal appCachePluginInstance.appCacheInstance.getManifestBody(),
+        """
+          testimage2.jpg
+
+          NETWORK:
+          *
+          
+        """
+
 
