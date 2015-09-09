@@ -34,10 +34,7 @@ class AppCachePlugin
   handleCompilerEmit: (compilation, callback) =>
       @appCacheInstance = new AppCache @cache, @network, @fallback, @settings, compilation.hash
       assetsList = JSON.parse(JSON.stringify(compilation.assets))
-
       delete assetsList[key] for key in Object.keys(compilation.assets) when key in @exclude
-
-
       @appCacheInstance.addAsset asset for asset in Object.keys(assetsList)
       compilation.assets['manifest.appcache'] = @appCacheInstance
       callback()
