@@ -125,3 +125,75 @@ describe 'AppCache', ->
   describe 'size()', ->
     it 'should measure byte size', ->
       assert.equal @appCache.size(), 117
+
+
+describe 'AppCachePlugin', ->
+
+  describe 'handleCompilerEmit()', ->
+
+    beforeEach =>
+      @compilationMock = {
+        assets: {
+          'testimage1.png': {},
+          'testimage2.jpg': {},
+          'testjs1.js': {},
+          'testcss1.css': {}
+        }
+      }
+
+    it 'should populate the manifest with the assets provided by webpack', =>
+      appCachePluginInstance = new AppCachePlugin()
+
+      appCachePluginInstance.handleCompilerEmit(@compilationMock, (->))
+
+      assert.equal appCachePluginInstance.appCacheInstance.getManifestBody(),
+        """
+          testimage1.png
+          testimage2.jpg
+          testjs1.js
+          testcss1.css
+
+          NETWORK:
+          *
+
+        """
+
+    it 'should exclude the asset specified in the options', =>
+      appCachePluginInstance = new AppCachePlugin
+        exclude: [
+          'testimage1.png'
+        ]
+
+      appCachePluginInstance.handleCompilerEmit(@compilationMock, (->))
+
+      assert.equal appCachePluginInstance.appCacheInstance.getManifestBody(),
+        """
+          testimage2.jpg
+          testjs1.js
+          testcss1.css
+
+          NETWORK:
+          *
+          
+        """
+
+    it 'should exclude multiple assets specified in the options', =>
+      appCachePluginInstance = new AppCachePlugin
+        exclude: [
+          'testimage1.png',
+          'testcss1.css',
+          'testjs1.js',
+        ]
+
+      appCachePluginInstance.handleCompilerEmit(@compilationMock, (->))
+
+      assert.equal appCachePluginInstance.appCacheInstance.getManifestBody(),
+        """
+          testimage2.jpg
+
+          NETWORK:
+          *
+          
+        """
+
+
