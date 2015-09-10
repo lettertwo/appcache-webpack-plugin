@@ -1,4 +1,4 @@
-class AppCache {
+export class AppCache {
 
   constructor(cache, network, fallback, settings, hash) {
     this.cache = cache;

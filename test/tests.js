@@ -1,70 +1,88 @@
 /* eslint-env mocha */
 import assert from 'power-assert';
 import {createHash} from 'crypto';
-import AppCachePlugin from '../lib';
+import {AppCache} from '../lib';
 
 describe('AppCache', () => {
-  let appCache;
+  let cacheEntries, networkEntries, fallbackEnteries, settingsEntries;
 
   beforeEach(() => {
-    appCache = new AppCachePlugin.AppCache(
-      ['cache.test'],
-      ['network.test'],
-      ['fallback.test'],
-      undefined,
-      createHash('md5').digest('hex'),
-    );
+    cacheEntries = ['cache.test'];
+    networkEntries = ['network.test'];
+    fallbackEnteries = ['fallback.test'];
+    settingsEntries = ['prefer-online'];
   });
-
 
   describe('getManifestBody()', () => {
 
-    it('should include CACHE section items', () => {
-      appCache.network = appCache.fallback = null;
-      assert(appCache.getManifestBody() === 'CACHE:\ncache.test\n');
+    describe('CACHE section', () => {
+
+      it('should include CACHE section items', () => {
+        const appCache = new AppCache(cacheEntries);
+        assert(appCache.getManifestBody() === 'CACHE:\ncache.test\n');
+      });
+
+      it('should exclude empty CACHE section', () => {
+        const appCache = new AppCache([]);
+        assert(appCache.getManifestBody() === '');
+      });
+
     });
 
-    it('should exclude empty CACHE section', () => {
-      appCache.cache = [];
-      assert(appCache.getManifestBody() === 'NETWORK:\nnetwork.test\n\nFALLBACK:\nfallback.test\n');
+    describe('NETWORK section', () => {
+
+      it('should include NETWORK section items', () => {
+        const appCache = new AppCache(null, networkEntries);
+        assert(appCache.getManifestBody() === 'NETWORK:\nnetwork.test\n');
+      });
+
+      it('should exclude empty NETWORK section', () => {
+        const appCache = new AppCache(null, []);
+        assert(appCache.getManifestBody() === '');
+      });
+
     });
 
-    it('should include NETWORK section items', () => {
-      appCache.cache = appCache.fallback = null;
-      assert(appCache.getManifestBody() === 'NETWORK:\nnetwork.test\n');
+    describe('FALLBACK section', () => {
+
+      it('should include FALLBACK section items', () => {
+        const appCache = new AppCache(null, null, fallbackEnteries);
+        assert(appCache.getManifestBody() === 'FALLBACK:\nfallback.test\n');
+      });
+
+      it('should exclude empty FALLBACK section', () => {
+        const appCache = new AppCache(null, null, []);
+        assert(appCache.getManifestBody() === '');
+      });
+
     });
 
-    it('should exclude empty NETWORK section', () => {
-      appCache.network = [];
-      assert(appCache.getManifestBody() === 'CACHE:\ncache.test\n\nFALLBACK:\nfallback.test\n');
-    });
+    describe('SETTINGS section', () => {
 
-    it('should include FALLBACK section items', () => {
-      appCache.network = appCache.cache = null;
-      assert(appCache.getManifestBody() === 'FALLBACK:\nfallback.test\n');
-    });
+      it('should include SETTINGS section', () => {
+        const appCache = new AppCache(null, null, null, settingsEntries);
+        assert(appCache.getManifestBody() === 'SETTINGS:\nprefer-online\n');
+      });
 
-    it('should exclude empty FALLBACK section', () => {
-      appCache.fallback = [];
-      assert(appCache.getManifestBody() === 'CACHE:\ncache.test\n\nNETWORK:\nnetwork.test\n');
-    });
+      it('should exclude empty SETTINGS section', () => {
+        const appCache = new AppCache(null, null, null, []);
+        assert(appCache.getManifestBody() === '');
+      });
 
-    it('should include SETTINGS section', () => {
-      appCache.settings = ['prefer-online'];
-      assert(appCache.getManifestBody() === 'CACHE:\ncache.test\n\nNETWORK:\nnetwork.test\n\nFALLBACK:\nfallback.test\n\nSETTINGS:\nprefer-online\n');
-    });
-
-    it('should exclude empty SETTINGS section', () => {
-      appCache.settings = {};
-      assert(appCache.getManifestBody() === 'CACHE:\ncache.test\n\nNETWORK:\nnetwork.test\n\nFALLBACK:\nfallback.test\n');
     });
 
   });
 
   describe('source()', () => {
+    let hash, appCache;
+
+    beforeEach(() => {
+      hash = createHash('md5').digest('hex');
+      appCache = new AppCache(cacheEntries, networkEntries, fallbackEnteries, settingsEntries, hash);
+    });
 
     it('should include webpack build hash', () => {
-      assert(new RegExp(`# ${appCache.hash}`).test(appCache.source()), 'hash is not in source');
+      assert(new RegExp(`# ${hash}`).test(appCache.source()), 'hash is not in source');
     });
 
     it('should include manifest body', () => {
@@ -76,7 +94,9 @@ describe('AppCache', () => {
   describe('size()', () => {
 
     it('should measure byte size', () => {
-      assert(appCache.size() === 117);
+      const hash = createHash('md5').digest('hex');
+      const appCache = new AppCache(cacheEntries, networkEntries, fallbackEnteries, settingsEntries, hash);
+      assert(appCache.size() === 142);
     });
 
   });
