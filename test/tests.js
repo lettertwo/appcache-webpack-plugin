@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 import assert from 'power-assert';
 import {createHash} from 'crypto';
-import AppCachePlugin, {AppCache} from '../lib';
+import AppCachePlugin, {AppCache} from '../src';
 
 describe('AppCachePlugin', () => {
 
