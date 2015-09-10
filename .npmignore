@@ -1,6 +1,3 @@
 /node_modules/
 /src/
 /test/
-/coffeelint.json
-/gulpfile.coffee
-/gulpfile.js
