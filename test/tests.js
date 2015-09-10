@@ -1,7 +1,80 @@
 /* eslint-env mocha */
 import assert from 'power-assert';
 import {createHash} from 'crypto';
-import {AppCache} from '../lib';
+import AppCachePlugin, {AppCache} from '../lib';
+
+describe('AppCachePlugin', () => {
+
+  describe('constructor', () => {
+
+    it('provides default section entries', () => {
+      const plugin = new AppCachePlugin();
+      assert(plugin.cache === undefined);
+      assert(plugin.network.length === 1);
+      assert(plugin.network[0] === '*');
+      assert(plugin.fallback === undefined);
+      assert(plugin.settings === undefined);
+    });
+
+    it('accepts section entries as arguments', () => {
+      const plugin = new AppCachePlugin({
+        cache: ['cache.test'],
+        network: ['network.test'],
+        fallback: ['fallback.test'],
+        settings: ['prefer-online'],
+      });
+
+      assert(plugin.cache.length === 1);
+      assert(plugin.cache[0] === 'cache.test');
+      assert(plugin.network.length === 1);
+      assert(plugin.network[0] === 'network.test');
+      assert(plugin.fallback.length === 1);
+      assert(plugin.fallback[0] === 'fallback.test');
+      assert(plugin.settings.length === 1);
+      assert(plugin.settings[0] === 'prefer-online');
+    });
+
+  });
+
+  describe('apply()', () => {
+    let compiler, compilation, cb, cbWasCalled;
+
+    beforeEach(() => {
+      cbWasCalled = false;
+      cb = () => { cbWasCalled = true; };
+
+      compilation = {
+        assets: {'test.asset': null},
+      };
+
+      compiler = {
+        plugin(_, fn) { fn(compilation, cb); },
+      };
+    });
+
+    it('creates a new AppCache compilation asset', () => {
+      new AppCachePlugin().apply(compiler);
+      assert(Object.keys(compilation.assets).length === 2);
+      assert(compilation.assets['manifest.appcache']);
+      assert(compilation.assets['manifest.appcache'] instanceof AppCache);
+    });
+
+    it('it adds compilation assets to the app cache', () => {
+      new AppCachePlugin().apply(compiler);
+      const appCache = compilation.assets['manifest.appcache'];
+      assert(appCache);
+      assert(appCache.assets.length === 1);
+      assert(appCache.assets[0] === 'test.asset');
+    });
+
+    it('calls the apply callback', () => {
+      new AppCachePlugin().apply(compiler);
+      assert(cbWasCalled);
+    });
+
+  });
+
+});
 
 describe('AppCache', () => {
   let cacheEntries, networkEntries, fallbackEnteries, settingsEntries;
