@@ -7,31 +7,65 @@ describe('AppCachePlugin', () => {
 
   describe('constructor', () => {
 
-    it('provides default section entries', () => {
-      const plugin = new AppCachePlugin();
-      assert(plugin.cache === undefined);
-      assert(plugin.network.length === 1);
-      assert(plugin.network[0] === '*');
-      assert(plugin.fallback === undefined);
-      assert(plugin.settings === undefined);
-    });
+    describe('cache option', () => {
 
-    it('accepts section entries as arguments', () => {
-      const plugin = new AppCachePlugin({
-        cache: ['cache.test'],
-        network: ['network.test'],
-        fallback: ['fallback.test'],
-        settings: ['prefer-online'],
+      it('is undefined by default', () => {
+        const plugin = new AppCachePlugin();
+        assert(plugin.cache === undefined);
       });
 
-      assert(plugin.cache.length === 1);
-      assert(plugin.cache[0] === 'cache.test');
-      assert(plugin.network.length === 1);
-      assert(plugin.network[0] === 'network.test');
-      assert(plugin.fallback.length === 1);
-      assert(plugin.fallback[0] === 'fallback.test');
-      assert(plugin.settings.length === 1);
-      assert(plugin.settings[0] === 'prefer-online');
+      it('accepts CACHE section entries', () => {
+        const plugin = new AppCachePlugin({cache: ['cache.test']});
+        assert(plugin.cache.length === 1);
+        assert(plugin.cache[0] === 'cache.test');
+      });
+
+    });
+
+    describe('network option', () => {
+
+      it('allows all (*) by default', () => {
+        const plugin = new AppCachePlugin();
+        assert(plugin.network.length === 1);
+        assert(plugin.network[0] === '*');
+      });
+
+      it('accepts NETWORK section entries', () => {
+        const plugin = new AppCachePlugin({network: ['network.test']});
+        assert(plugin.network.length === 1);
+        assert(plugin.network[0] === 'network.test');
+      });
+
+    });
+
+    describe('fallback option', () => {
+
+      it('is undefined by default', () => {
+        const plugin = new AppCachePlugin();
+        assert(plugin.fallback === undefined);
+      });
+
+      it('accepts FALLBACK section entries', () => {
+        const plugin = new AppCachePlugin({fallback: ['fallback.test']});
+        assert(plugin.fallback.length === 1);
+        assert(plugin.fallback[0] === 'fallback.test');
+      });
+
+    });
+
+    describe('settings option', () => {
+
+      it('is undefined by default', () => {
+        const plugin = new AppCachePlugin();
+        assert(plugin.settings === undefined);
+      });
+
+      it('accepts SETTINGS section entries', () => {
+        const plugin = new AppCachePlugin({settings: ['prefer-online']});
+        assert(plugin.settings.length === 1);
+        assert(plugin.settings[0] === 'prefer-online');
+      });
+
     });
 
   });
