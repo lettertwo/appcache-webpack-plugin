@@ -88,6 +88,12 @@ describe('AppCache', () => {
 
   describe('getManifestBody()', () => {
 
+    it('includes added assets', () => {
+      const appCache = new AppCache();
+      appCache.addAsset('test.asset');
+      assert(appCache.getManifestBody() === 'test.asset\n');
+    });
+
     describe('CACHE section', () => {
 
       it('includes CACHE section items', () => {
