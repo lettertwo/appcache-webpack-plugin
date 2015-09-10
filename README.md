@@ -12,7 +12,8 @@ module.exports = {
       cache: ['someOtherAsset.jpg'],
       network: null,  // No network access allowed!
       fallback: ['failwhale.jpg'],
-      settings: ['prefer-online']
+      settings: ['prefer-online'],
+      exclude: ['file.txt', /.*\.js$/]  // Exclude file.txt and all .js files
     })
   ]
 }
@@ -25,6 +26,8 @@ Arguments:
   Defaults to `['*']`.
 * `fallback`: An array of fallback assets.
 * `settings`: An array of settings.
+* `exclude`: An array of strings or regex patterns. Assets in the compilation
+that match any of these patterns will be excluded from the manifest.
 
 ## License
 

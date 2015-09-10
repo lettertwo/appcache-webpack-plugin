@@ -41,17 +41,25 @@ export default class AppCachePlugin {
 
   static AppCache = AppCache
 
-  constructor({cache, network = ['*'], fallback, settings} = {}) {
+  constructor({cache, network = ['*'], fallback, settings, exclude = []} = {}) {
     this.cache = cache;
     this.network = network;
     this.fallback = fallback;
     this.settings = settings;
+
+    // Convert exclusion strings to RegExp.
+    this.exclude = exclude.map(exclusion => {
+      if (exclusion instanceof RegExp) return exclusion;
+      return new RegExp(`^${exclusion}$`);
+    });
   }
 
   apply(compiler) {
     compiler.plugin('emit', (compilation, callback) => {
       const appCache = new AppCache(this.cache, this.network, this.fallback, this.settings, compilation.hash);
-      Object.keys(compilation.assets).forEach(::appCache.addAsset);
+      Object.keys(compilation.assets)
+        .filter(asset => !this.exclude.some(pattern => pattern.test(asset)))
+        .forEach(::appCache.addAsset);
       compilation.assets['manifest.appcache'] = appCache;
       callback();
     });

@@ -68,6 +68,24 @@ describe('AppCachePlugin', () => {
 
     });
 
+    describe('exclude option', () => {
+
+      it('is an empty Array by default', () => {
+        const plugin = new AppCachePlugin();
+        assert(plugin.exclude.length === 0);
+      });
+
+      it('accepts a list of exclude patterns (compiled to RegExp)', () => {
+        const plugin = new AppCachePlugin({exclude: ['something', /somethingelse/]});
+        assert(plugin.exclude.length === 2);
+        assert(plugin.exclude[0] instanceof RegExp);
+        assert(plugin.exclude[0].toString() === '/^something$/');
+        assert(plugin.exclude[1] instanceof RegExp);
+        assert(plugin.exclude[1].toString() === '/somethingelse/');
+      });
+
+    });
+
   });
 
   describe('apply()', () => {
@@ -99,6 +117,18 @@ describe('AppCachePlugin', () => {
       assert(appCache);
       assert(appCache.assets.length === 1);
       assert(appCache.assets[0] === 'test.asset');
+    });
+
+    it('excludes compilation assets that match an exclude pattern', () => {
+      new AppCachePlugin({exclude: [/asset/]}).apply(compiler);
+      const appCache = compilation.assets['manifest.appcache'];
+      assert(appCache.assets.length === 0);
+    });
+
+    it('excludes compilation assets that match an exclude string', () => {
+      new AppCachePlugin({exclude: ['test.asset']}).apply(compiler);
+      const appCache = compilation.assets['manifest.appcache'];
+      assert(appCache.assets.length === 0);
     });
 
     it('calls the apply callback', () => {
