@@ -17,12 +17,12 @@ describe('AppCache', () => {
 
     describe('CACHE section', () => {
 
-      it('should include CACHE section items', () => {
+      it('includes CACHE section items', () => {
         const appCache = new AppCache(cacheEntries);
         assert(appCache.getManifestBody() === 'CACHE:\ncache.test\n');
       });
 
-      it('should exclude empty CACHE section', () => {
+      it('excludes empty CACHE section', () => {
         const appCache = new AppCache([]);
         assert(appCache.getManifestBody() === '');
       });
@@ -31,12 +31,12 @@ describe('AppCache', () => {
 
     describe('NETWORK section', () => {
 
-      it('should include NETWORK section items', () => {
+      it('includes NETWORK section items', () => {
         const appCache = new AppCache(null, networkEntries);
         assert(appCache.getManifestBody() === 'NETWORK:\nnetwork.test\n');
       });
 
-      it('should exclude empty NETWORK section', () => {
+      it('excludes empty NETWORK section', () => {
         const appCache = new AppCache(null, []);
         assert(appCache.getManifestBody() === '');
       });
@@ -45,12 +45,12 @@ describe('AppCache', () => {
 
     describe('FALLBACK section', () => {
 
-      it('should include FALLBACK section items', () => {
+      it('includes FALLBACK section items', () => {
         const appCache = new AppCache(null, null, fallbackEnteries);
         assert(appCache.getManifestBody() === 'FALLBACK:\nfallback.test\n');
       });
 
-      it('should exclude empty FALLBACK section', () => {
+      it('excludes empty FALLBACK section', () => {
         const appCache = new AppCache(null, null, []);
         assert(appCache.getManifestBody() === '');
       });
@@ -59,12 +59,12 @@ describe('AppCache', () => {
 
     describe('SETTINGS section', () => {
 
-      it('should include SETTINGS section', () => {
+      it('includes SETTINGS section', () => {
         const appCache = new AppCache(null, null, null, settingsEntries);
         assert(appCache.getManifestBody() === 'SETTINGS:\nprefer-online\n');
       });
 
-      it('should exclude empty SETTINGS section', () => {
+      it('excludes empty SETTINGS section', () => {
         const appCache = new AppCache(null, null, null, []);
         assert(appCache.getManifestBody() === '');
       });
@@ -81,11 +81,11 @@ describe('AppCache', () => {
       appCache = new AppCache(cacheEntries, networkEntries, fallbackEnteries, settingsEntries, hash);
     });
 
-    it('should include webpack build hash', () => {
+    it('includes webpack build hash', () => {
       assert(new RegExp(`# ${hash}`).test(appCache.source()), 'hash is not in source');
     });
 
-    it('should include manifest body', () => {
+    it('includes manifest body', () => {
       assert(new RegExp(appCache.getManifestBody()).test(appCache.source()), 'manifest body not in source');
     });
 
@@ -93,7 +93,7 @@ describe('AppCache', () => {
 
   describe('size()', () => {
 
-    it('should measure byte size', () => {
+    it('measures byte size', () => {
       const hash = createHash('md5').digest('hex');
       const appCache = new AppCache(cacheEntries, networkEntries, fallbackEnteries, settingsEntries, hash);
       assert(appCache.size() === 142);
