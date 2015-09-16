@@ -16,4 +16,7 @@ changelog: changelog.template.ejs
 	@rm changelog.template.ejs
 	@echo "Added changes since $$(git describe --abbrev=0) to CHANGELOG.md"
 
-.PHONY: dev test lint
+build:
+	@babel --stage=0 src --out-dir lib
+
+.PHONY: dev test lint build

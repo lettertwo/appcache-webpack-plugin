@@ -8,6 +8,7 @@
     "webpack": ">=0.11 <2"
   },
   "scripts": {
+    "prepublish": "make build",
     "test": "make test"
   },
   "repository": {
