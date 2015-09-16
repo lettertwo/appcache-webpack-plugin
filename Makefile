@@ -19,4 +19,13 @@ changelog: changelog.template.ejs
 build:
 	@babel --stage=0 src --out-dir lib
 
-.PHONY: dev test lint build
+major:
+	@mversion major
+
+minor:
+	@mversion minor
+
+patch:
+	@mversion patch
+
+.PHONY: dev test lint build major minor patch
