@@ -1,3 +1,7 @@
+## 1.1.0
+
+* Prepend manifest entries with output publicPath
+
 ## 1.0.0
 
 * Implement exclude option. Assets can now be excluded from the manifest!
