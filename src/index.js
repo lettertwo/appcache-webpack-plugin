@@ -1,3 +1,5 @@
+import path from 'path';
+
 class AppCache {
 
   constructor(cache, network, fallback, settings, hash) {
@@ -55,11 +57,14 @@ export default class AppCachePlugin {
   }
 
   apply(compiler) {
+    const {options: {output: outputOptions = {}} = {}} = compiler;
+    const {publicPath = ''} = outputOptions;
+
     compiler.plugin('emit', (compilation, callback) => {
       const appCache = new AppCache(this.cache, this.network, this.fallback, this.settings, compilation.hash);
       Object.keys(compilation.assets)
         .filter(asset => !this.exclude.some(pattern => pattern.test(asset)))
-        .forEach(::appCache.addAsset);
+        .forEach(asset => appCache.addAsset(path.join(publicPath, asset)));
       compilation.assets['manifest.appcache'] = appCache;
       callback();
     });

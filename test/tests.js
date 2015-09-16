@@ -138,6 +138,13 @@ describe('AppCachePlugin', () => {
       assert(cbWasCalled);
     });
 
+    it('incorporates the output.publicPath option', () => {
+      compiler.options = {output: {publicPath: '/test/'}};
+      new AppCachePlugin().apply(compiler);
+      const appCache = compilation.assets['manifest.appcache'];
+      assert(appCache.assets[0] === '/test/test.asset');
+    });
+
   });
 
 });
