@@ -1,6 +1,6 @@
 {
   "name": "appcache-webpack-plugin",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "author": "Eric Eldredge <lettertwo@gmail.com>",
   "description": "Generate an HTML5 Application Cache for a Webpack build",
   "main": "./lib/index.js",

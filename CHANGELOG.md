@@ -1,3 +1,8 @@
+## 1.0.0
+
+* Implement exclude option. Assets can now be excluded from the manifest!
+* Re-implement in ES6!
+
 ## 0.2.0
 
 * Settings are now expected to be a list, not an options-style object.
