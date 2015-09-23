@@ -43,11 +43,19 @@ export default class AppCachePlugin {
 
   static AppCache = AppCache
 
-  constructor({cache, network = ['*'], fallback, settings, exclude = []} = {}) {
+  constructor({
+    cache,
+    network = ['*'],
+    fallback,
+    settings,
+    exclude = [],
+    output = 'manifest.appcache',
+  } = {}) {
     this.cache = cache;
     this.network = network;
     this.fallback = fallback;
     this.settings = settings;
+    this.output = output;
 
     // Convert exclusion strings to RegExp.
     this.exclude = exclude.map(exclusion => {
@@ -65,7 +73,7 @@ export default class AppCachePlugin {
       Object.keys(compilation.assets)
         .filter(asset => !this.exclude.some(pattern => pattern.test(asset)))
         .forEach(asset => appCache.addAsset(path.join(publicPath, asset)));
-      compilation.assets['manifest.appcache'] = appCache;
+      compilation.assets[this.output] = appCache;
       callback();
     });
   }

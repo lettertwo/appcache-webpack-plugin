@@ -4,6 +4,7 @@ import {createHash} from 'crypto';
 import AppCachePlugin from '../src';
 
 const {AppCache} = AppCachePlugin;
+const DEFAULT_MANIFEST_NAME = 'manifest.appcache';
 
 describe('AppCachePlugin', () => {
 
@@ -88,6 +89,15 @@ describe('AppCachePlugin', () => {
 
     });
 
+    describe('output option', () => {
+
+      it('is manifest.appcache by default', () => {
+        const plugin = new AppCachePlugin();
+        assert(plugin.output === DEFAULT_MANIFEST_NAME);
+      });
+
+    });
+
   });
 
   describe('apply()', () => {
@@ -109,13 +119,23 @@ describe('AppCachePlugin', () => {
     it('creates a new AppCache compilation asset', () => {
       new AppCachePlugin().apply(compiler);
       assert(Object.keys(compilation.assets).length === 2);
-      assert(compilation.assets['manifest.appcache']);
-      assert(compilation.assets['manifest.appcache'] instanceof AppCache);
+      assert(compilation.assets[DEFAULT_MANIFEST_NAME]);
+      assert(compilation.assets[DEFAULT_MANIFEST_NAME] instanceof AppCache);
+    });
+
+    it('names the asset as specified by the output option', () => {
+      const OUTPUT_NAME = 'my-special-manifest.appcache';
+
+      new AppCachePlugin({output: OUTPUT_NAME}).apply(compiler);
+      assert(Object.keys(compilation.assets).length === 2);
+      assert(compilation.assets[DEFAULT_MANIFEST_NAME] === undefined);
+      assert(compilation.assets[OUTPUT_NAME]);
+      assert(compilation.assets[OUTPUT_NAME] instanceof AppCache);
     });
 
     it('it adds compilation assets to the app cache', () => {
       new AppCachePlugin().apply(compiler);
-      const appCache = compilation.assets['manifest.appcache'];
+      const appCache = compilation.assets[DEFAULT_MANIFEST_NAME];
       assert(appCache);
       assert(appCache.assets.length === 1);
       assert(appCache.assets[0] === 'test.asset');
@@ -123,13 +143,13 @@ describe('AppCachePlugin', () => {
 
     it('excludes compilation assets that match an exclude pattern', () => {
       new AppCachePlugin({exclude: [/asset/]}).apply(compiler);
-      const appCache = compilation.assets['manifest.appcache'];
+      const appCache = compilation.assets[DEFAULT_MANIFEST_NAME];
       assert(appCache.assets.length === 0);
     });
 
     it('excludes compilation assets that match an exclude string', () => {
       new AppCachePlugin({exclude: ['test.asset']}).apply(compiler);
-      const appCache = compilation.assets['manifest.appcache'];
+      const appCache = compilation.assets[DEFAULT_MANIFEST_NAME];
       assert(appCache.assets.length === 0);
     });
 
@@ -141,7 +161,7 @@ describe('AppCachePlugin', () => {
     it('incorporates the output.publicPath option', () => {
       compiler.options = {output: {publicPath: '/test/'}};
       new AppCachePlugin().apply(compiler);
-      const appCache = compilation.assets['manifest.appcache'];
+      const appCache = compilation.assets[DEFAULT_MANIFEST_NAME];
       assert(appCache.assets[0] === '/test/test.asset');
     });
 

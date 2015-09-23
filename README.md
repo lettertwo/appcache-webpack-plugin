@@ -14,6 +14,7 @@ module.exports = {
       fallback: ['failwhale.jpg'],
       settings: ['prefer-online'],
       exclude: ['file.txt', /.*\.js$/]  // Exclude file.txt and all .js files
+      output: 'my-manifest.appcache'
     })
   ]
 }
@@ -28,6 +29,7 @@ Arguments:
 * `settings`: An array of settings.
 * `exclude`: An array of strings or regex patterns. Assets in the compilation
 that match any of these patterns will be excluded from the manifest.
+* `output`: The filename to write the appcache to
 
 ## License
 
