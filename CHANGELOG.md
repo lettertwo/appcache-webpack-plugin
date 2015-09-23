@@ -1,3 +1,7 @@
+## 1.2.0
+
+* Allow configuration of output filename
+
 ## 1.1.0
 
 * Prepend manifest entries with output publicPath
