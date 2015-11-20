@@ -1,3 +1,7 @@
+## 1.2.1
+
+* Fix URL concatenation
+
 ## 1.2.0
 
 * Allow configuration of output filename
