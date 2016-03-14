@@ -246,15 +246,19 @@ describe('AppCache', () => {
   });
 
   describe('source()', () => {
-    let hash, appCache;
+    let comment = '# version 2.17.0-8105-827a7b6-20160212045647', hash, appCache;
 
     beforeEach(() => {
       hash = createHash('md5').digest('hex');
-      appCache = new AppCache(cacheEntries, networkEntries, fallbackEnteries, settingsEntries, hash);
+      appCache = new AppCache(cacheEntries, networkEntries, fallbackEnteries, settingsEntries, hash, comment);
     });
 
     it('includes webpack build hash', () => {
       assert(new RegExp(`# ${hash}`).test(appCache.source()), 'hash is not in source');
+    });
+
+    it('includes comment', () => {
+      assert(new RegExp(comment).test(appCache.source()), 'comment is not in source');
     });
 
     it('includes manifest body', () => {
