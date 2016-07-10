@@ -13,7 +13,7 @@ module.exports = {
       network: null,  // No network access allowed!
       fallback: ['failwhale.jpg'],
       settings: ['prefer-online'],
-      exclude: ['file.txt', /.*\.js$/]  // Exclude file.txt and all .js files
+      exclude: ['file.txt', /.*\.js$/],  // Exclude file.txt and all .js files
       output: 'my-manifest.appcache'
     })
   ]
