@@ -1,3 +1,8 @@
+## 1.3.0
+
+* Include support for webpack 2
+* Add a comment option
+
 ## 1.2.1
 
 * Fix URL concatenation
