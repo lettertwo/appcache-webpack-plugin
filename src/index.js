@@ -69,13 +69,12 @@ export default class AppCachePlugin {
     const {options: {output: outputOptions = {}} = {}} = compiler;
     const {publicPath = ''} = outputOptions;
 
-    compiler.plugin('emit', (compilation, callback) => {
+		compiler.hooks.emit.tap("appacache-webpack-plugin", (compilation) => {
       const appCache = new AppCache(this.cache, this.network, this.fallback, this.settings, compilation.hash, this.comment);
       Object.keys(compilation.assets)
         .filter(asset => !this.exclude.some(pattern => pattern.test(asset)))
         .forEach(asset => appCache.addAsset(publicPath + asset));
       compilation.assets[this.output] = appCache;
-      callback();
     });
   }
 }
