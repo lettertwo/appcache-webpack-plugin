@@ -5,7 +5,7 @@
   "description": "Generate an HTML5 Application Cache for a Webpack build",
   "main": "./lib/index.js",
   "peerDependencies": {
-    "webpack": ">=0.11 <2.0.0 || >=2.1.0-beta.13 <3.0.0"
+    "webpack": ">=0.11 <=4.x.x"
   },
   "scripts": {
     "prepublish": "make build",
