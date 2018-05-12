@@ -1,3 +1,7 @@
+## 1.4.0
+
+* Support webpack 4.0 tapable api
+
 ## 1.3.0
 
 * Include support for webpack 2
