@@ -82,7 +82,7 @@ export default class AppCachePlugin {
       compiler.hooks.emit.tap('AppCachePlugin', buildAppCache);
     } else {
       compiler.plugin('emit', (compilation, callback) => {
-        buildAppCache();
+        buildAppCache(compilation);
         callback();
       });
     }
