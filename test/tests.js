@@ -6,6 +6,18 @@ import AppCachePlugin from '../src';
 const {AppCache} = AppCachePlugin;
 const DEFAULT_MANIFEST_NAME = 'manifest.appcache';
 
+const mockCompiler = (compilation) => ({
+  hooks: {
+    emit: {
+      tap(_, fn) { fn(compilation); },
+    },
+  },
+});
+
+const mockLegacyCompiler = (compilation, cb) => ({
+  plugin(_, fn) { fn(compilation, cb); },
+});
+
 describe('AppCachePlugin', () => {
 
   describe('constructor', () => {
@@ -100,73 +112,77 @@ describe('AppCachePlugin', () => {
 
   });
 
-  describe('apply()', () => {
-    let compiler, compilation, cb, cbWasCalled;
+  for (const [description, shouldCallCb, createCompiler] of [
+    ['apply()', false, mockCompiler],
+    ['apply() (legacy)', true, mockLegacyCompiler],
+  ]) {
 
-    beforeEach(() => {
-      cbWasCalled = false;
-      cb = () => { cbWasCalled = true; };
+    describe(description, () => { // eslint-disable-line no-loop-func
+      let compiler, compilation, cb, cbWasCalled;
 
-      compilation = {
-        assets: {'test.asset': null},
-      };
+      beforeEach(() => {
+        cbWasCalled = false;
+        cb = () => { cbWasCalled = true; };
 
-      compiler = {
-        plugin(_, fn) { fn(compilation, cb); },
-      };
+        compilation = {
+          assets: {'test.asset': null},
+        };
+
+        compiler = createCompiler(compilation, cb);
+      });
+
+      it('creates a new AppCache compilation asset', () => {
+        new AppCachePlugin().apply(compiler);
+        assert(Object.keys(compilation.assets).length === 2);
+        assert(compilation.assets[DEFAULT_MANIFEST_NAME]);
+        assert(compilation.assets[DEFAULT_MANIFEST_NAME] instanceof AppCache);
+      });
+
+      it('names the asset as specified by the output option', () => {
+        const OUTPUT_NAME = 'my-special-manifest.appcache';
+
+        new AppCachePlugin({output: OUTPUT_NAME}).apply(compiler);
+        assert(Object.keys(compilation.assets).length === 2);
+        assert(compilation.assets[DEFAULT_MANIFEST_NAME] === undefined);
+        assert(compilation.assets[OUTPUT_NAME]);
+        assert(compilation.assets[OUTPUT_NAME] instanceof AppCache);
+      });
+
+      it('adds compilation assets to the app cache', () => {
+        new AppCachePlugin().apply(compiler);
+        const appCache = compilation.assets[DEFAULT_MANIFEST_NAME];
+        assert(appCache);
+        assert(appCache.assets.length === 1);
+        assert(appCache.assets[0] === 'test.asset');
+      });
+
+      it('excludes compilation assets that match an exclude pattern', () => {
+        new AppCachePlugin({exclude: [/asset/]}).apply(compiler);
+        const appCache = compilation.assets[DEFAULT_MANIFEST_NAME];
+        assert(appCache.assets.length === 0);
+      });
+
+      it('excludes compilation assets that match an exclude string', () => {
+        new AppCachePlugin({exclude: ['test.asset']}).apply(compiler);
+        const appCache = compilation.assets[DEFAULT_MANIFEST_NAME];
+        assert(appCache.assets.length === 0);
+      });
+
+      it('incorporates the output.publicPath option', () => {
+        compiler.options = {output: {publicPath: '/test/'}};
+        new AppCachePlugin().apply(compiler);
+        const appCache = compilation.assets[DEFAULT_MANIFEST_NAME];
+        assert(appCache.assets[0] === '/test/test.asset');
+      });
+
+      it(`${shouldCallCb ? 'calls' : 'does not call'} the apply callback`, () => {
+        new AppCachePlugin().apply(compiler);
+        assert(shouldCallCb ? cbWasCalled : !cbWasCalled);
+      });
+
     });
 
-    it('creates a new AppCache compilation asset', () => {
-      new AppCachePlugin().apply(compiler);
-      assert(Object.keys(compilation.assets).length === 2);
-      assert(compilation.assets[DEFAULT_MANIFEST_NAME]);
-      assert(compilation.assets[DEFAULT_MANIFEST_NAME] instanceof AppCache);
-    });
-
-    it('names the asset as specified by the output option', () => {
-      const OUTPUT_NAME = 'my-special-manifest.appcache';
-
-      new AppCachePlugin({output: OUTPUT_NAME}).apply(compiler);
-      assert(Object.keys(compilation.assets).length === 2);
-      assert(compilation.assets[DEFAULT_MANIFEST_NAME] === undefined);
-      assert(compilation.assets[OUTPUT_NAME]);
-      assert(compilation.assets[OUTPUT_NAME] instanceof AppCache);
-    });
-
-    it('it adds compilation assets to the app cache', () => {
-      new AppCachePlugin().apply(compiler);
-      const appCache = compilation.assets[DEFAULT_MANIFEST_NAME];
-      assert(appCache);
-      assert(appCache.assets.length === 1);
-      assert(appCache.assets[0] === 'test.asset');
-    });
-
-    it('excludes compilation assets that match an exclude pattern', () => {
-      new AppCachePlugin({exclude: [/asset/]}).apply(compiler);
-      const appCache = compilation.assets[DEFAULT_MANIFEST_NAME];
-      assert(appCache.assets.length === 0);
-    });
-
-    it('excludes compilation assets that match an exclude string', () => {
-      new AppCachePlugin({exclude: ['test.asset']}).apply(compiler);
-      const appCache = compilation.assets[DEFAULT_MANIFEST_NAME];
-      assert(appCache.assets.length === 0);
-    });
-
-    it('calls the apply callback', () => {
-      new AppCachePlugin().apply(compiler);
-      assert(cbWasCalled);
-    });
-
-    it('incorporates the output.publicPath option', () => {
-      compiler.options = {output: {publicPath: '/test/'}};
-      new AppCachePlugin().apply(compiler);
-      const appCache = compilation.assets[DEFAULT_MANIFEST_NAME];
-      assert(appCache.assets[0] === '/test/test.asset');
-    });
-
-  });
-
+  }
 });
 
 describe('AppCache', () => {
