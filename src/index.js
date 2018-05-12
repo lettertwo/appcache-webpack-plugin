@@ -69,22 +69,22 @@ export default class AppCachePlugin {
     const {options: {output: outputOptions = {}} = {}} = compiler;
     const {publicPath = ''} = outputOptions;
 
-		const buildAppCache = (compilation) => {
+    const buildAppCache = (compilation) => {
       const appCache = new AppCache(this.cache, this.network, this.fallback, this.settings, compilation.hash, this.comment);
       Object.keys(compilation.assets)
         .filter(asset => !this.exclude.some(pattern => pattern.test(asset)))
         .forEach(asset => appCache.addAsset(publicPath + asset));
       compilation.assets[this.output] = appCache;
-		}
+    };
 
-		// Detect Webpack 4 API.
-		if (compiler.hooks && compiler.hooks.emit && compiler.hooks.emit.tap) {
-			compiler.hooks.emit.tap('AppCachePlugin', buildAppCache);
-		} else {
-			compiler.plugin('emit', (compilation, callback) => {
-				buildAppCache()
-				callback()
-			})
-		}
+    // Detect Webpack 4 API.
+    if (compiler.hooks && compiler.hooks.emit && compiler.hooks.emit.tap) {
+      compiler.hooks.emit.tap('AppCachePlugin', buildAppCache);
+    } else {
+      compiler.plugin('emit', (compilation, callback) => {
+        buildAppCache();
+        callback();
+      });
+    }
   }
 }
