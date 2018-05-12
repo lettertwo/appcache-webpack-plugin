@@ -11,6 +11,7 @@ class AppCache {
   }
 
   addAsset(asset) {
+    if(/(^\.|[\\\/]\.)/.test(asset)) return;
     this.assets.push(encodeURI(asset));
   }
 
