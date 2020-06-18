@@ -37,7 +37,7 @@
     "eslint-plugin-babel": "^2.1.1",
     "git-release-notes": "^0.0.2",
     "mocha": "^2.3.2",
-    "mversion": "^1.10.1",
+    "mversion": "^2.0.0",
     "power-assert": "^1.0.0"
   }
 }
